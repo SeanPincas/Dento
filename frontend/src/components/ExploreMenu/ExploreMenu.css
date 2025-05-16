@@ -1,0 +1,95 @@
+.explore-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.explore-menu h1 {
+    color: #033500;
+    font-weight: 500;
+    padding-top: 10px;
+}
+
+.explore-menu-text {
+    max-width: 60%;
+    color: #033500;
+}
+
+.explore-menu-list {
+    display: flex;
+    justify-content: flex-start; /* changed from space-between to allow scrolling */
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    margin: 20px 0px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scroll-behavior: smooth;
+    scrollbar-width: thin; /* for Firefox */
+    scrollbar-color: #ccc transparent;
+}
+
+.explore-menu-list::-webkit-scrollbar {
+    height: 6px;
+}
+
+.explore-menu-list::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.explore-menu-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Optional: hide scrollbar by default and show on hover */
+.explore-menu-list {
+    scrollbar-width: none; /* Firefox */
+}
+.explore-menu-list::-webkit-scrollbar {
+    display: none; /* Chrome */
+}
+.explore-menu-list:hover {
+    scrollbar-width: thin;
+}
+.explore-menu-list:hover::-webkit-scrollbar {
+    display: block;
+}
+
+/* Menu Item Styles */
+.explore-menu-list-item img {
+    width: 7.5vw;
+    min-width: 80px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.explore-menu-list-item p {
+    margin-top: 10px;
+    color: #033500;
+    font-size: max(1.4vh, 16px);
+    cursor: pointer;
+}
+
+/* Active state */
+.explore-menu-list-item .active {
+    border: 6px solid #033500;
+    padding: 4px;
+}
+
+/* Divider */
+.explore-menu hr {
+    margin: 10px 0px;
+    height: 4px;
+    background-color: #033500;
+    border: none;
+}
+
+/* Responsive */
+@media (max-width: 1050px) {
+    .explore-menu-text {
+        max-width: 100%;
+        font-size: 14px;
+    }
+}

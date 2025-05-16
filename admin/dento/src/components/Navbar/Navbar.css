@@ -1,0 +1,33 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4%;
+    
+}
+
+.navbar .logo {
+    width: max(60%, 80px);
+}
+
+.navbar .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.navbar .admin-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #033500;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    font-family: Arial, sans-serif;
+}
+
+.navbar .profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
