@@ -29,13 +29,25 @@
     background-color: #033500;
     border-color: #ad7230;
     color: white;
-    padding: 12px 16px;         /* Increased padding for a larger box */
-    font-size: max(1vw, 12px);            /* Optional: slightly bigger text */
-    transition: all 0.2s ease;  /* Smooth effect on change */
+    padding: 12px 16px;
+    font-size: max(1vw, 12px);
+    transition: all 0.2s ease;
 }
 
 @media (max-width: 726px) {
-    .sidebar-options p {
-        display: none;
-    }
+  .sidebar-options p {
+    display: none !important;       /* ⬅️ new: force-hide paragraph text */
+    width: 0 !important;            /* ⬅️ new: eliminate horizontal space */
+    margin: 0 !important;           /* ⬅️ new: eliminate spacing */
+    padding: 0 !important;          /* ⬅️ new: eliminate spacing */
+  }
+
+  .sidebar-suboptions {
+    justify-content: center;       /* ⬅️ new: center icon when text is gone */
+  }
+
+  .sidebar-options .active {
+    padding: 8px 10px !important;  /* ⬅️ new: normalize padding */
+    font-size: 0 !important;       /* ⬅️ new: remove space due to text */
+  }
 }
