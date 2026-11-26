@@ -54,8 +54,10 @@ Dento/
 ├── frontend/      Customer React application
 ├── admin/dento/   Admin React application
 ├── context/       Project and AI handoff documentation
-├── docker-compose.yml
-├── start-dento.ps1
+├── docker-compose.yml           Production-style stack (Nginx builds)
+├── docker-compose.override.yml  Live-reload dev setup, loaded automatically
+├── start-dento.ps1              Starts the production-style stack
+├── start-dento-dev.ps1          Starts the live-reload stack
 ├── DOCKER.md
 └── README.md
 ```
@@ -78,17 +80,21 @@ Prerequisites:
 - A local `backend/.env` file containing valid MongoDB, JWT, and Stripe values. Use `backend/.env.example` as the template.
 - MongoDB Atlas running with the machine's IP address allowed.
 
-From the project root, either run:
+From the project root, run:
 
 ```powershell
 docker compose up --build
 ```
 
-or use the helper, which also prints the local URLs:
+This loads `docker-compose.override.yml` automatically, so the customer and admin apps run with live reload: saved changes in `frontend/` or `admin/dento/` appear in the browser without a rebuild. `.\start-dento-dev.ps1` does the same in the background and prints the URLs.
+
+To test the production-style Nginx build instead (no live reload):
 
 ```powershell
-.\start-dento.ps1
+docker compose -f docker-compose.yml up --build
 ```
+
+or `.\start-dento.ps1`.
 
 Local addresses:
 

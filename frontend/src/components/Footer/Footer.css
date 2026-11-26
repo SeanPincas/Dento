@@ -49,14 +49,133 @@
     border: none;
 }
 
-@media (max-width:765px) {
-    .footer-content{
-        width: 80%;
-        display: flex;
-        flex-direction: column;
-        gap: 35px;
+.footer-content-left > img{
+    width: 180px;
+}
+
+.footer-social-icons-contact{
+    display: none;
+}
+
+/* The copyright splits into two lines on phones. */
+.footer-copyright-break{
+    display: none;
+}
+
+/* Tablets: the brand block across the top, Company and Get in touch side by
+   side under it. */
+@media (max-width: 1050px) {
+    .footer{
+        padding: 24px 6vw 14px;
+        margin-top: 32px;
+        gap: 8px;
     }
+    .footer-content{
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 40px;
+    }
+    .footer-content-left{
+        grid-column: 1 / -1;
+        gap: 8px;
+    }
+    .footer-content-left > img{
+        width: 150px;
+    }
+    .footer-content-left p{
+        max-width: 560px;
+        line-height: 1.5;
+    }
+    .footer-content-center,
+    .footer-content-right{
+        gap: 6px;
+    }
+    .footer-content h2{
+        font-size: 18px;
+        letter-spacing: 1px;
+    }
+    .footer-content li{
+        margin-bottom: 3px;
+    }
+    .footer hr{
+        margin: 4px 0;
+    }
+    /* Left-aligned so the raised Order button in the middle of the bottom
+       nav never covers it, which lets the footer end close to the bar. */
     .footer-copyright{
+        align-self: flex-start;
+        text-align: left;
+        font-size: 14px;
+    }
+    /* Social icons move under Get in touch. */
+    .footer-social-icons-brand{
+        display: none;
+    }
+    .footer-social-icons-contact{
+        display: flex;
+        gap: 12px;
+        margin-top: 4px;
+    }
+    .footer-social-icons img{
+        width: 34px;
+        margin-right: 0;
+    }
+}
+
+/* Phones: everything centred and tighter, the two link lists still side by
+   side so the footer stays short. */
+@media (max-width: 750px) {
+    .footer{
+        padding: 20px 18px 12px;
+        margin-top: 28px;
+        gap: 6px;
+    }
+    .footer-content{
+        gap: 14px 16px;
+    }
+    .footer-content-left{
+        align-items: center;
         text-align: center;
+        gap: 8px;
+    }
+    .footer-content-left > img{
+        width: 128px;
+    }
+    .footer-content-left p{
+        font-size: 14px;
+    }
+    .footer-social-icons-contact{
+        gap: 10px;
+    }
+    .footer-social-icons img{
+        width: 30px;
+    }
+    .footer-content-center,
+    .footer-content-right{
+        gap: 5px;
+        min-width: 0;
+    }
+    .footer-content h2{
+        font-size: 14px;
+        letter-spacing: 1.5px;
+    }
+    .footer-content li{
+        font-size: 13px;
+        margin-bottom: 2px;
+        overflow-wrap: anywhere;
+    }
+    .footer hr{
+        height: 2px;
+        margin: 4px 0;
+    }
+    /* Two short left-aligned lines, clear of the raised Order button. */
+    .footer-copyright{
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    .footer-copyright-sep{
+        display: none;
+    }
+    .footer-copyright-break{
+        display: inline;
     }
 }

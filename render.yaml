@@ -1,0 +1,25 @@
+# Render Blueprint for the Dento API (Express + MongoDB + Stripe).
+# Render: New > Blueprint > pick this repo. Secrets marked sync: false are
+# asked for in the Render dashboard; they are never stored in the repo.
+services:
+  - type: web
+    name: dento-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      # The customer site's Vercel URL, e.g. https://dento.vercel.app
+      # (Stripe sends customers back here after paying).
+      - key: FRONTEND_URL
+        sync: false

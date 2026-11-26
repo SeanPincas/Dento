@@ -1,0 +1,35 @@
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.55);
+    animation: fadeIn 0.2s;
+}
+
+/* Search sits near the top; forms sit in the middle. */
+.modal-top {
+    align-items: flex-start;
+    padding-top: 12vh;
+}
+
+.modal-center {
+    align-items: center;
+}
+
+/* Phones and tablets: pop-ups at the top (search) open under the navbar,
+   which stays visible above the dimmed page. 62px / 52px = navbar height. */
+@media (max-width: 1050px) {
+    .modal-top {
+        top: 62px;
+        padding-top: 16px;
+    }
+}
+
+@media (max-width: 750px) {
+    .modal-top {
+        top: 52px;
+        padding-top: 12px;
+    }
+}

@@ -1,42 +1,456 @@
 .food-display{
-    margin-top: 30px;
+    margin-top: 40px;
 }
-.food-display h2{
-    font-size: max(2vw,24px);
+
+/* Floating dock: a placemat for the grabbed plate, the category ribbon and
+   search, docked centrally under the sticky navbar (68px, 62px under 1050px). */
+/* Dishes beside a sidebar dock on wide screens. The layout breaks out of the
+   centred 80% page column to span the full window, so the sidebar sits at the
+   left edge of the screen while the cards centre in the space beside it. */
+.food-display-layout{
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding: 0 10px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.food-display-main{
+    flex: 1;
+    min-width: 0;
+}
+
+/* Sidebar dock: placemat, title, category ribbon and search stacked in a
+   pinned panel under the sticky navbar (68px, 62px under 1050px). */
+/* Sidebar column: dock + order list, pinned together under the navbar. */
+.food-sidebar{
+    position: sticky;
+    top: 84px;
+    z-index: 4;
+    flex: none;
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* Never taller than the visible screen under the navbar (84px) with a 16px
+       gap below; the order slip shrinks and scrolls its list to fit. */
+    max-height: calc(100vh - 100px);
+    max-height: calc(100dvh - 100px);
+}
+
+.food-sidebar > .food-dock{
+    flex: none;
+}
+
+
+.food-dock{
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    border-radius: 26px;
+    background: rgba(3, 53, 0, 0.92);
+    -webkit-backdrop-filter: blur(10px) saturate(1.3);
+    backdrop-filter: blur(10px) saturate(1.3);
+    box-shadow: 0 16px 36px rgba(3, 53, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    color: white;
+}
+
+.food-dock .food-dock-mat{
+    align-self: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 24px;
+}
+
+.food-dock .food-dock-plate{
+    --plate-size: 76px;
+}
+
+.food-dock .food-dock-mat-empty{
+    width: 70px;
+    height: 70px;
+}
+
+.food-dock .food-dock-info{
+    align-items: stretch;
+    text-align: center;
+}
+
+.food-dock .food-dock-ribbon{
+    justify-content: center;
+    flex-wrap: wrap;
+    white-space: normal;
+}
+
+.food-dock .food-dock-hint{
+    text-align: center;
+}
+
+
+/* Short screens: a more compact dock leaves the order slip more room. */
+@media (min-width: 1051px) and (max-height: 760px) {
+    .food-sidebar{
+        gap: 12px;
+    }
+    .food-dock{
+        padding: 14px;
+        gap: 12px;
+    }
+    .food-dock .food-dock-mat{
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+    }
+    .food-dock .food-dock-plate{
+        --plate-size: 56px;
+    }
+    .food-dock .food-dock-mat-empty{
+        width: 54px;
+        height: 54px;
+    }
+    .food-dock .food-dock-hint{
+        display: none;
+    }
+}
+
+/* Wooden placemat: the "table" the plate is set down on. */
+.food-dock-mat{
+    width: 76px;
+    height: 76px;
+    flex: none;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 2px, transparent 2px 12px),
+        linear-gradient(160deg, #c08443, #ad7230 55%, #8f5c24);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.25), inset 0 -3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.food-dock-mat-empty{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 253, 249, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 253, 249, 0.85);
+}
+
+/* Mini plate on the placemat (ui/CeramicPlate), with a short landing bounce. */
+.food-dock-plate{
+    --plate-shadow: 0 8px 10px -4px rgba(0, 0, 0, 0.45);
+    animation: plateLand 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes plateLand{
+    0%{ transform: scale(1.25); }
+    60%{ transform: scale(0.94); }
+    100%{ transform: scale(1); }
+}
+
+/* The plate in flight (ceramic-plate styles); moved and scaled every frame
+   from FoodDisplay.jsx, which also sets --shadow as it rises and falls. */
+.flying-plate{
+    --shadow: 0.2;
+    --plate-shadow: 0 40px 40px -10px rgba(3, 53, 0, var(--shadow));
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 20;
+    display: none;
+    pointer-events: none;
+    transform-origin: center;
+}
+
+.food-dock-info{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.food-dock h2{
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #f0c48a;
+    white-space: nowrap;
+}
+
+.food-dock-hint{
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Brown ribbon with notched ends showing the category on screen. */
+.food-dock-ribbon{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 28px 7px 22px;
+    background: #ad7230;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 0 100%, 10px 50%);
+    white-space: nowrap;
+}
+
+.food-dock-ribbon-jp{
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+.food-dock-ribbon-name{
+    font-size: 18px;
     font-weight: 600;
 }
 
+.food-dock-ribbon-count{
+    font-size: 13px;
+    padding: 2px 10px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* Small round × on the ribbon that clears the category. */
+.food-dock-clear{
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: inherit;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.22);
+    color: white;
+    transition: background 0.2s, color 0.2s;
+}
+
+.food-dock-clear:hover{
+    background: white;
+    color: #ad7230;
+}
+
+
+
+
+
+.food-display-empty{
+    margin: 60px auto 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: #033500;
+    text-align: center;
+}
+
+.food-display-empty button{
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 50px;
+    border: none;
+    background: #033500;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.food-display-empty button:hover{
+    background: #ad7230;
+}
+
+/* Narrower screens: the dock goes back to a bar across the top. */
+@media (max-width: 1050px) {
+    .food-display-layout{
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .food-sidebar{
+        top: 72px;
+        width: auto;
+    }
+    .food-sidebar .order-slip-wrap{ /* the Order tab opens it as a sheet instead */
+        display: none;
+    }
+    /* Tablets: one slim row, a small mat and the ribbon running the full
+       height of the dock (over its padding). Phones shrink it further. */
+    /* Only as wide as its contents, centred; the empty sides of the sticky
+       bar let taps through to the cards underneath. */
+    .food-sidebar{
+        pointer-events: none;
+    }
+    .food-dock{
+        pointer-events: auto;
+        width: fit-content;
+        max-width: 100%;
+        align-self: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 6px 12px 6px 6px;
+        gap: 12px;
+        border-radius: 20px;
+    }
+    .food-dock .food-dock-mat{
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+    }
+    .food-dock .food-dock-plate{
+        --plate-size: 40px;
+    }
+    .food-dock .food-dock-mat-empty{
+        width: 36px;
+        height: 36px;
+    }
+    .food-dock .food-dock-mat-empty svg{
+        width: 17px;
+        height: 17px;
+    }
+    .food-dock .food-dock-info{
+        flex: 1;
+        min-width: 0;
+        gap: 0;
+        align-self: stretch;
+        margin: -6px 0;
+        align-items: flex-start;
+        text-align: left;
+    }
+    .food-dock h2,
+    .food-dock .food-dock-hint{
+        display: none;
+    }
+    .food-dock .food-dock-ribbon{
+        flex: 1;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 0 26px 0 20px;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 50%, 100% 100%, 0 100%, 13px 50%);
+    }
+    .food-dock .food-dock-ribbon-jp{
+        font-size: 15px;
+    }
+    .food-dock .food-dock-ribbon-name{
+        font-size: 19px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .food-dock .food-dock-ribbon-count{
+        font-size: 13px;
+        white-space: nowrap;
+    }
+}
+
+/* Phones: one slim row (small mat + ribbon) so the sticky dock takes as
+   little of the screen height as possible. */
+@media (max-width: 750px) {
+    .food-sidebar{
+        top: 58px; /* 52px navbar on phones + 6px */
+    }
+    .food-dock{
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding: 5px 10px 5px 5px;
+        gap: 10px;
+        border-radius: 18px;
+    }
+    .food-dock .food-dock-mat{
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+    }
+    .food-dock .food-dock-plate{
+        --plate-size: 33px;
+    }
+    .food-dock .food-dock-mat-empty{
+        width: 30px;
+        height: 30px;
+    }
+    .food-dock .food-dock-mat-empty svg{
+        width: 15px;
+        height: 15px;
+    }
+    /* The ribbon runs the full height of the dock, over its top and bottom
+       padding; the dock's height is still set by the 42px mat. */
+    .food-dock .food-dock-info{
+        flex: 1;
+        min-width: 0;
+        gap: 0;
+        align-self: stretch;
+        margin: -5px 0;
+    }
+    .food-dock h2,
+    .food-dock .food-dock-hint{
+        display: none;
+    }
+    .food-dock .food-dock-ribbon{
+        flex: 1;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 9px;
+        padding: 0 24px 0 18px;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 50%, 100% 100%, 0 100%, 12px 50%);
+    }
+    .food-dock .food-dock-ribbon-jp{
+        font-size: 14px;
+    }
+    .food-dock .food-dock-ribbon-name{
+        font-size: 17px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .food-dock .food-dock-ribbon-count{
+        font-size: 12px;
+        padding: 2px 9px;
+        white-space: nowrap;
+    }
+    .food-dock .food-dock-clear{
+        width: 22px;
+        height: 22px;
+        font-size: 15px;
+    }
+    .food-display-main .food-display-list{ /* beats the 30px rule further down */
+        margin-top: 14px;
+    }
+}
+
 .food-display-list{
+    /* Cards fill all the space beside the sidebar: as many columns of at
+       least 260px as fit, stretched evenly so there is no dead space. */
     display: grid;
-    grid-template-columns: repeat(4, 2fr);
-    margin-top: 30px;
-    gap: 15px;
-    row-gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+    row-gap: 18px;
 }
 
-@media (max-width: 1440px) {
-    .food-display-list {
-        grid-template-columns: repeat(4, 1fr); /* 3 items per row */
+@media (max-width: 1050px) {
+    .food-display-list{
+        margin-top: 16px;
     }
 }
 
-@media (max-width: 1129px) {
-    .food-display-list {
-        grid-template-columns: repeat(3, 1fr); /* 3 items per row */
-    }
-}
-
-
-/* Media query for screens below 750px */
-@media (max-width: 855px) {
-    .food-display-list {
-        grid-template-columns: repeat(2, 1fr); /* 2 items per row */
-    }
-}
-
-/* Media query for screens below 500px */
+/* Phones: two cards in each row. */
 @media (max-width: 575px) {
-    .food-display-list {
-        grid-template-columns: repeat(1, 1fr); /* 1 item per row */
+    .food-display-list{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        row-gap: 12px;
     }
 }

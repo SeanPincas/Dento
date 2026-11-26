@@ -1,52 +1,165 @@
 .navbar{
-    padding: 20px 0px;
+    /* Sticky, full-width bar; content lines up with the 80% .app column. */
+    --navbar-h: 68px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    height: var(--navbar-h);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding: 0 calc(50vw - 50%);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: #033500;
+    transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
+    isolation: isolate;
+}
+
+/* A tinted strip of the hero photo behind the solid bar, so it reads as a
+   slice of the Noren hero. Hidden while the bar floats over the hero itself. */
+.navbar::before,
+.navbar::after{
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+
+.navbar::before{
+    background: url('/header_img.png') center 45% / cover no-repeat;
+    transform: scaleX(-1);
+}
+
+.navbar::after{
+    background: linear-gradient(90deg, rgba(3, 53, 0, 0.92) 0%, rgba(3, 53, 0, 0.7) 50%, rgba(3, 53, 0, 0.92) 100%);
+}
+
+.navbar-overlay::before,
+.navbar-overlay::after{
+    opacity: 0;
+}
+
+/* Scrolling inside the hero: frosted glass so the headline sliding underneath
+   never blends into the links and icons. */
+.navbar-glass{
+    /* Dense enough that white content underneath (e.g. the hero search bar)
+       turns into a soft green shape instead of washing out the white links. */
+    background: linear-gradient(90deg, rgba(3, 53, 0, 0.84), rgba(8, 60, 4, 0.76) 50%, rgba(3, 53, 0, 0.84));
+    -webkit-backdrop-filter: blur(10px) saturate(1.3) brightness(0.85);
+    backdrop-filter: blur(10px) saturate(1.3) brightness(0.85);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.navbar-scrolled{
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Home page, before scrolling: see-through over the Noren hero.
+   Otherwise the bar is solid Dento green. Both use the light styling below. */
+.navbar-overlay{
+    background: transparent;
+}
+
+.navbar-logo-link{
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 50px;
+    background: #fffdf9;
+}
+
+.navbar .navbar-menu{
+    color: white;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+.navbar-right > img,
+
+.navbar-icon-btn img,
+.navbar-search-icon img,
+.navbar-profile > img{
+    filter: brightness(0) invert(1) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
+}
+
+.navbar .navbar-search-icon .dot{
+    background-color: #f0c48a;
 }
 
 .navbar .logo {
-    width: 175px;
+    width: 112px;
     height: auto;
+    display: block;
+}
+
+.navbar-right > img,
+
+.navbar-icon-btn img,
+.navbar-search-icon img,
+.navbar-profile > img{
+    width: 22px;
+    display: block;
 }
 
 .navbar-menu{
     display: flex;
     list-style: none;
-    gap: 20px;
+    gap: 26px;
     color: #033500;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .navbar-right{
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 26px;
 }
 
 .navbar button{
     background-color: #ad7230;
     font-size: 14px;
     color: white;
-    border: 1px solid #033500;
-    padding: 10px 30px;
+    border: 1px solid #ad7230;
+    padding: 8px 22px;
     border-radius: 50px;
     cursor: pointer;
     transition: 0.3s;
 }
 
 .navbar button:hover{
-    color: #033500;
+    color: white;
     background: transparent;
+    border-color: white;
 }
 
 .navbar .active{
     padding-bottom: 2px;
-    border-bottom: 2px solid #033500;
+    border-bottom: 2px solid #ad7230;
 }
 
 .navbar li{
     cursor: pointer;
+}
+
+.navbar-search-btn{
+    cursor: pointer;
+}
+
+/* Search icon button: a plain icon, not the brown "sign in" pill. */
+.navbar .navbar-icon-btn{
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar .navbar-icon-btn:hover{
+    background: none;
+    border: none;
 }
 
 .navbar-search-icon{
@@ -102,45 +215,91 @@
 }
 
 @media (max-width:1050px) {
+    .navbar{
+        --navbar-h: 62px;
+    }
     .navbar .logo{
-        width: 140px;
+        width: 104px;
     }
     .navbar-menu{
         gap: 20px;
-        font-size: 17px;
+        font-size: 15px;
     }
     .navbar-right{
-        gap: 30px;
+        gap: 20px;
     }
-    .navbar-right img{
-        width: 22px;
+    .navbar-right > img,
+    .navbar-icon-btn img,
+    .navbar-search-icon img,
+    .navbar-profile > img{
+        width: 20px;
     }
     .navbar-right button{
-        padding: 8px 25px;
+        padding: 7px 18px;
     }
 }
 @media (max-width:900px) {
     .navbar .logo{
-        width: 120px;
+        width: 96px;
     }
     .navbar-menu{
         gap: 15px;
-        font-size: 16px;
+        font-size: 14px;
     }
     .navbar-right{
-        gap: 20px;
+        gap: 16px;
     }
-    .navbar-right img{
-        width: 20px;
+    .navbar-right > img,
+    .navbar-icon-btn img,
+    .navbar-search-icon img,
+    .navbar-profile > img{
+        width: 19px;
     }
     .navbar-right button{
-        padding: 7px 20px;
-        font-size: 20px;
+        padding: 6px 16px;
+        font-size: 13px;
     }
 }
-@media (max-width:750px) {
+/* Phones and tablets: the bottom nav (components/BottomNav) takes over the
+   links, search, order slip and account, so the top bar is just the logo. */
+@media (max-width:1050px) {
     .navbar-menu{
         display: none;
     }
+    .navbar{
+        justify-content: center; /* the logo sits in the middle */
+    }
+    /* Only the basket stays, in the top-right corner. */
+    .navbar-right{
+        position: absolute;
+        top: 0;
+        right: 14px;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+    }
+    .navbar-right > :not(.navbar-search-icon){
+        display: none;
+    }
+    .navbar .navbar-search-icon .navbar-icon-btn{
+        padding: 8px; /* bigger tap target */
+    }
+    .navbar .navbar-search-icon .dot{
+        top: 4px;
+        right: 4px;
+    }
+}
 
+/* Phones: a slimmer bar with a smaller logo, leaving more of the screen for
+   the page. Header.css and FoodDisplay.css use the same 52px. */
+@media (max-width:750px) {
+    .navbar{
+        --navbar-h: 52px;
+    }
+    .navbar .logo{
+        width: 80px;
+    }
+    .navbar-logo-link{
+        padding: 3px 10px;
+    }
 }

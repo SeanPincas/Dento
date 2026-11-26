@@ -22,3 +22,23 @@
 .app-download-platforms img:hover{
     transform: scale(1.05);
 }
+/* Phones: use the full width (breaking out of the 80% page column) so the
+   heading and store badges can be bigger. */
+@media (max-width: 750px){
+    .app-download{
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-top: 56px;
+        padding: 0 14px;
+        font-size: 28px;
+        line-height: 1.25;
+    }
+    .app-download-platforms{
+        gap: 12px;
+        margin-top: 24px;
+    }
+    .app-download-platforms img{
+        width: calc(50% - 6px);
+        max-width: 240px;
+    }
+}

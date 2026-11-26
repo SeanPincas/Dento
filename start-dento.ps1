@@ -1,6 +1,7 @@
 $ErrorActionPreference = "Stop"
 
-docker compose up -d --build
+# -f docker-compose.yml skips docker-compose.override.yml (the live-reload setup)
+docker compose -f docker-compose.yml up -d --build
 
 if ($LASTEXITCODE -ne 0) {
     throw "Docker Compose failed to start the Dento services."
@@ -13,4 +14,4 @@ Write-Host "  Admin dashboard: http://localhost:5174" -ForegroundColor Cyan
 Write-Host "  Backend API: http://localhost:4000" -ForegroundColor Cyan
 Write-Host ""
 
-docker compose ps
+docker compose -f docker-compose.yml ps

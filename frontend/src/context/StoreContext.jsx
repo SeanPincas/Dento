@@ -1,67 +1,79 @@
 import { createContext, useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../services/api";
+import { DELIVERY_FEE, MAX_ITEM_QUANTITY } from "../config";
 
 export const StoreContext = createContext(null);
 
+const clampQuantity = (quantity) =>
+    Math.max(0, Math.min(MAX_ITEM_QUANTITY, Math.floor(Number(quantity) || 0)));
+
 const StoreContextProvider = (props) => {
     const [cartItems, setCartItems] = useState({});
-    const url = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
     const [token, setToken] = useState("");
     const [food_list, setFoodList] = useState([]);
 
+    // Shared UI state, so the navbar, bottom nav and pages can open the same
+    // order slip, sign-in pop-up and search pop-up.
+    const [slipOpen, setSlipOpen] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
+    // A request (from the slip sheet) to scroll to a dish card in the menu.
+    const [locateRequest, setLocateRequest] = useState(null);
+    const requestLocate = (itemId) => setLocateRequest({ itemId, at: Date.now() });
+
     const addToCart = async (itemId) => {
-        if (!cartItems[itemId]) {
-            setCartItems((prev) => ({ ...prev, [itemId]: 1 }))
-        }
-        else {
-            setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }))
-        }
-        if (token) {
-            await axios.post(url + "/api/cart/add", { itemId }, { headers: { token } })
-        }
+        setCartItems((prev) => ({ ...prev, [itemId]: (prev[itemId] ?? 0) + 1 }));
+        if (token) await api.addToCart(token, itemId);
     };
 
     const removeFromCart = async (itemId) => {
-        setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }))
-        if (token) {
-            await axios.post(url + "/api/cart/remove", { itemId }, { headers: { token } })
-        }
+        setCartItems((prev) => ({ ...prev, [itemId]: Math.max(0, (prev[itemId] ?? 0) - 1) }));
+        if (token) await api.removeFromCart(token, itemId);
     };
 
-    const getTotalCartAmount = () => {
-
-        let totalAmount = 0;
-
-        for (const item in cartItems) {
-            if (cartItems[item] > 0) {
-                const itemInfo = food_list.find((product) => product._id === item);
-                if (!itemInfo) {
-                    continue;
-                }
-                totalAmount += itemInfo.price * cartItems[item];
-            }
-        }
-        return totalAmount;
+    // Set an exact quantity (typed into a dish card), 0 to MAX_ITEM_QUANTITY.
+    const setItemQuantity = async (itemId, quantity) => {
+        const qty = clampQuantity(quantity);
+        setCartItems((prev) => ({ ...prev, [itemId]: qty }));
+        if (token) await api.setCartQuantity(token, itemId, qty);
     };
 
-    const fetchFoodList = async () => {
-        const response = await axios.get(url + "/api/food/list");
-        setFoodList(response.data.data);
+    const getTotalCartAmount = () =>
+        Object.entries(cartItems ?? {}).reduce((total, [itemId, qty]) => {
+            if (qty <= 0) return total;
+            const item = food_list.find((product) => product._id === itemId);
+            return item ? total + item.price * qty : total;
+        }, 0);
+
+    // Delivery is only charged when there is something in the cart.
+    const getDeliveryFee = () => (getTotalCartAmount() === 0 ? 0 : DELIVERY_FEE);
+    const getOrderTotal = () => getTotalCartAmount() + getDeliveryFee();
+
+    // Number of plates ordered (2 Taiyaki + 1 tea = 3).
+    const getCartCount = () =>
+        Object.entries(cartItems ?? {}).reduce((count, [itemId, qty]) =>
+            qty > 0 && food_list.some((item) => item._id === itemId) ? count + qty : count, 0);
+
+    const signOut = () => {
+        localStorage.removeItem("token");
+        setToken("");
     };
-
-    const loadCartData = async (token) => {
-        const response = await axios.post(url + "/api/cart/get", {}, { headers: { token } })
-        setCartItems(response.data.cartData)
-
-    }
 
     useEffect(() => {
         async function loadData() {
-            await fetchFoodList();
+            const menu = await api.listFood();
+            setFoodList(menu.data ?? []);
 
-            if (localStorage.getItem("token")) {
-                setToken(localStorage.getItem("token"));
-                await loadCartData(localStorage.getItem("token"))
+            const savedToken = localStorage.getItem("token");
+            if (savedToken) {
+                const cart = await api.getCart(savedToken);
+                if (cart.success) {
+                    setToken(savedToken);
+                    setCartItems(cart.cartData ?? {});
+                } else {
+                    // Expired or invalid sign-in: drop it so the user can sign in again.
+                    localStorage.removeItem("token");
+                }
             }
         }
         loadData();
@@ -73,10 +85,23 @@ const StoreContextProvider = (props) => {
         setCartItems,
         addToCart,
         removeFromCart,
+        setItemQuantity,
         getTotalCartAmount,
-        url,
+        getDeliveryFee,
+        getOrderTotal,
+        getCartCount,
+        slipOpen,
+        setSlipOpen,
+        showLogin,
+        setShowLogin,
+        showSearch,
+        setShowSearch,
+        locateRequest,
+        setLocateRequest,
+        requestLocate,
         token,
         setToken,
+        signOut,
     };
 
     return (

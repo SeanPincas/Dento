@@ -36,13 +36,15 @@ docker compose up --build
 
 This works without `--env-file` because `docker-compose.yml` explicitly loads `./backend/.env` through the backend service's `env_file` setting.
 
-Alternatively:
+`docker-compose.override.yml` is loaded automatically, so this command runs the customer and admin apps with the Vite dev server and live reload (file polling enabled via `VITE_USE_POLLING`). `.\start-dento-dev.ps1` does the same detached and prints the URLs.
+
+For the production-style Nginx build (no live reload), skip the override:
 
 ```powershell
-.\start-dento.ps1
+docker compose -f docker-compose.yml up --build
 ```
 
-The helper starts the stack detached, prints the three URLs, and runs `docker compose ps`.
+or `.\start-dento.ps1`, which uses the same `-f docker-compose.yml` flag.
 
 Open:
 
@@ -68,6 +70,16 @@ The local file `backend/.env` is required and ignored by Git. It contains:
 Use `backend/.env.example` as the template. Never ask the user to paste secrets into chat. If a secret is suspected to have been exposed, rotate it in the provider dashboard and update the local file.
 
 MongoDB Atlas currently needs an allowed client IP. The broad `0.0.0.0/0` rule was used for Docker testing and should be removed or narrowed to the actual deployment/network IP before production.
+
+## Frontend structure (customer app)
+
+- `src/config.js`: API URL, currency (₱), delivery fee (must match `backend/controllers/orderController.js`), max item quantity.
+- `src/services/api.js`: every backend call (`api.*`) plus `imageUrl()`. Components never build URLs or auth headers.
+- `src/context/StoreContext.jsx`: menu, cart and token; `getTotalCartAmount`, `getDeliveryFee`, `getOrderTotal`, `setItemQuantity`, `signOut`.
+- `src/utils/`: `dishSearch.js` (search rules, Japanese category names), `format.js` (`formatPrice`), `motion.js` (`prefersReducedMotion`).
+- `src/hooks/useNavbarScroll.js`: navbar see-through / glass / solid states.
+- `src/components/ui/`: reusable pieces: `Modal`, `CeramicPlate`, `CartTotals`, `QuantityStepper`, `Icons`.
+- `src/components/BambooGrove/`: the bamboo groves; drawings in `public/bamboo/`, regenerated with `scripts/generate-bamboo.py`.
 
 ## Architecture and request flow
 
@@ -122,5 +134,13 @@ These are known product/security gaps, not reasons to undo the Docker work:
 - Use `apply_patch` for file edits.
 - Do not print secrets from `.env` files.
 - Do not commit `backend/.env`, dependency folders, build output, or uploaded runtime data.
-- Verify builds after changes: `npm run build` in both frontend projects and `docker compose up --build` when Docker-related files change.
+- Verify builds after changes: `npm run build` in both frontend projects and `docker compose -f docker-compose.yml up --build` (production-style) when Docker-related files change.
 - Keep the user informed one step at a time when changing Atlas, credentials, Docker, or deployment settings.
+
+
+### Phones and tablets (1050px and below)
+- `components/BottomNav`: fixed green bar (Home, Menu, raised Order 伝票 with plate count, Search, Account). The top navbar shows only the logo at this size.
+- The order slip is the cart. `components/OrderSheet` shows `OrderTray` in `components/ui/Sheet` (bottom sheet on phones, right drawer on tablets). Tapping a line closes it and scrolls to the dish card (`requestLocate` in StoreContext).
+- Account (signed in) opens a sheet with My orders, Mobile app, Contact us and Log out; signed out it opens the sign-in pop-up.
+- Slip Checkout goes straight to `/order` (sign-in first if needed). `/order` shows the slip read-only (`<OrderTray readOnly />`). `/cart` only redirects to the menu with the slip open. `components/ui/CartTotals` and `pages/Cart/Cart.css` are no longer used.
+- Shared UI state in StoreContext: `slipOpen`, `showLogin`, `showSearch`, `locateRequest`, `getCartCount`. `hooks/useOpenSlip` decides sheet (compact) vs sidebar (wide).

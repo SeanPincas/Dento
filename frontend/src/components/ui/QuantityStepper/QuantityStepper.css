@@ -1,0 +1,80 @@
+.qty-stepper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 50px;
+}
+
+.qty-stepper button {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.qty-stepper button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.qty-stepper input,
+.qty-stepper-value {
+    width: 44px;
+    height: 34px;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 34px;
+}
+
+.qty-stepper input:focus {
+    outline: 3px solid #ad7230;
+}
+
+/* On dark glass panels (dish cards). */
+.qty-stepper-glass {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.qty-stepper-glass button {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.qty-stepper-glass button:last-child {
+    background: #fffdf9;
+    color: #033500;
+}
+
+.qty-stepper-glass input,
+.qty-stepper-glass .qty-stepper-value {
+    background: rgba(255, 255, 255, 0.92);
+    color: #033500;
+}
+
+/* On white backgrounds (search results, lists). */
+.qty-stepper-light {
+    background: #f6efe6;
+}
+
+.qty-stepper-light button {
+    background: white;
+    color: #033500;
+    box-shadow: 0 1px 3px rgba(3, 53, 0, 0.15);
+}
+
+.qty-stepper-light button:last-child {
+    background: #033500;
+    color: white;
+}
+
+.qty-stepper-light input,
+.qty-stepper-light .qty-stepper-value {
+    background: white;
+    color: #033500;
+}

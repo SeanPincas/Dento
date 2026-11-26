@@ -1,0 +1,265 @@
+/* Order slip (伝票): cream paper with a torn bottom edge, numbered lines with
+   dotted leaders to the price, and a red seal stamped across it on checkout. */
+.order-slip-wrap {
+    filter: drop-shadow(0 12px 18px rgba(3, 53, 0, 0.18));
+    /* Takes the sidebar's remaining height and can shrink below its content. */
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-slip {
+    position: relative;
+    min-height: 0;
+    padding: 18px 16px 30px;
+    background: #fffdf9;
+    color: #033500;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 18px 18px 0 0;
+    /* torn bottom edge: a row of half-circle bites along the bottom */
+    -webkit-mask:
+        radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) bottom / 16px 12px repeat-x,
+        linear-gradient(#000, #000) top / 100% calc(100% - 11px) no-repeat;
+    mask:
+        radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) bottom / 16px 12px repeat-x,
+        linear-gradient(#000, #000) top / 100% calc(100% - 11px) no-repeat;
+}
+
+.order-slip-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.order-slip-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    letter-spacing: 6px;
+}
+
+.order-slip-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #6b4517;
+}
+
+.order-slip-rule {
+    border-top: 2px dashed #e2d3bf;
+}
+
+.order-slip-empty {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #4d6149;
+    text-align: center;
+    padding: 6px 4px;
+}
+
+/* Header, totals and Checkout stay put; only the list shrinks and scrolls,
+   so the slip always fits the screen however long the order is. */
+.order-slip > :not(.order-slip-list):not(.order-slip-stamp) {
+    flex: none;
+}
+
+.order-slip-list {
+    list-style: none;
+    flex: 1 1 auto;
+    min-height: 72px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0 -6px;
+    padding: 0 6px;
+}
+
+/* Each line is a button: it jumps to the dish's card in the menu. */
+.order-slip-line {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 6px;
+    margin: 0 -6px;
+    box-sizing: content-box;
+    border: none;
+    border-radius: 10px;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.order-slip-line.is-static {
+    cursor: default;
+}
+
+.order-slip-line:not(.is-static):hover,
+.order-slip-line:focus-visible {
+    background: #f6efe6;
+    outline: none;
+}
+
+.order-slip-no {
+    flex: none;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: #ad7230;
+}
+
+.order-slip-thumb {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 2px #fffdf9, 0 0 0 3px #e2d3bf;
+}
+
+.order-slip-name {
+    min-width: 0;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.order-slip-qty {
+    flex: none;
+    font-size: 11px;
+    color: #6b4517;
+}
+
+.order-slip-dots {
+    flex: 1;
+    min-width: 8px;
+    align-self: flex-end;
+    margin-bottom: 8px;
+    border-bottom: 1px dotted #c9b48f;
+}
+
+.order-slip-price {
+    flex: none;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+}
+
+.order-slip-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 13px;
+}
+
+.order-slip-totals div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.order-slip-totals dt {
+    color: #4d6149;
+}
+
+.order-slip-total {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.order-slip-total dt {
+    color: #033500;
+}
+
+.order-slip-checkout {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 50px;
+    background: #033500;
+    color: white;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.25s;
+}
+
+.order-slip-checkout:hover {
+    background: #ad7230;
+}
+
+.order-slip-checkout:disabled {
+    cursor: default;
+}
+
+/* Red 伝統 seal pressed into the centre of the slip. */
+.order-slip-stamp {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 3;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border-radius: 18px;
+    border: 5px solid #b8452a;
+    box-shadow: inset 0 0 0 4px #fffdf9, inset 0 0 0 7px #b8452a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: #b8452a;
+    background: rgba(255, 253, 249, 0.35);
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    animation: stampDown 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+/* slightly uneven ink, like a real rubber stamp */
+.order-slip-stamp::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255, 253, 249, 0.55) 0 6px, transparent 7px),
+        radial-gradient(circle at 75% 70%, rgba(255, 253, 249, 0.45) 0 5px, transparent 6px),
+        radial-gradient(circle at 60% 15%, rgba(255, 253, 249, 0.4) 0 4px, transparent 5px);
+}
+
+.order-slip-stamp-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 46px;
+    font-weight: 700;
+    line-height: 1;
+    writing-mode: vertical-rl;
+    letter-spacing: 4px;
+}
+
+.order-slip-stamp-latin {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+@keyframes stampDown {
+    0% { transform: scale(2.4) rotate(-4deg); opacity: 0; }
+    60% { transform: scale(0.94) rotate(-11deg); opacity: 1; }
+    100% { transform: scale(1) rotate(-10deg); opacity: 1; }
+}
+
+/* A small jolt of the slip as the stamp lands. */
+.order-slip.is-stamped {
+    animation: slipThud 0.3s ease-out 0.25s;
+}
+
+@keyframes slipThud {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(2px); }
+}

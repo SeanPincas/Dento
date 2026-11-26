@@ -1,72 +1,64 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import './LoginPopup.css'
 import { assets } from '../../assets/assets'
-import { useContext } from 'react'
 import { StoreContext } from '../../context/StoreContext'
-import axios from "axios"
+import { api } from '../../services/api'
+import Modal from '../ui/Modal/Modal'
+
+const LOGIN = 'Login'
+const SIGN_UP = 'Sign Up'
 
 const LoginPopup = ({ setShowLogin }) => {
 
-    const {url, setToken} = useContext(StoreContext)
+    const { setToken } = useContext(StoreContext)
 
-    const [currrentState, setCurrentState] = useState("Login")
-    const [data,setData] = useState({
-        name:"",
-        email:"",
-        password:""
-    })
+    const [mode, setMode] = useState(LOGIN)
+    const [data, setData] = useState({ name: '', email: '', password: '' })
+    const close = () => setShowLogin(false)
 
     const onChangeHandler = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setData(data=>({...data,[name]:value}))
+        const { name, value } = event.target
+        setData((prev) => ({ ...prev, [name]: value }))
     }
 
-    const onLogin = async (event) => {
+    const onSubmit = async (event) => {
         event.preventDefault()
-        let newUrl = url
-        if (currrentState==="Login") {
-            newUrl += "/api/user/login"
-        }
-        else {
-            newUrl += "/api/user/register"
-        }
+        const response = mode === LOGIN ? await api.login(data) : await api.register(data)
 
-        const response = await axios.post(newUrl,data)
-
-        if (response.data.success) {
-            setToken(response.data.token);
-            localStorage.setItem("token",response.data.token)
-            setShowLogin(false)
-        }
-        else {
-            alert(response.data.message)
+        if (response.success) {
+            setToken(response.token)
+            localStorage.setItem('token', response.token)
+            close()
+        } else {
+            alert(response.message)
         }
     }
 
     return (
-        <div className='login-popup'>
-            <form onSubmit={onLogin} className="login-popup-container">
-                <div className="login-popup-title">
-                    <h2>{currrentState}</h2>
-                    <img onClick={() => setShowLogin(false)} src={assets.cross_icon} alt="" />
+        <Modal onClose={close} label={mode} position='center'>
+            <form onSubmit={onSubmit} className='login-popup-container'>
+                <div className='login-popup-title'>
+                    <h2>{mode}</h2>
+                    <button type='button' className='login-popup-close' aria-label='Close' onClick={close}>
+                        <img src={assets.cross_icon} alt='' />
+                    </button>
                 </div>
-                <div className="login-popup-inputs">
-                    {currrentState === "Login" ? <></> : <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='Your Name' required />}
-                    <input name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Your Email' required />
-                    <input name='password' onChange={onChangeHandler} value={data.password} type="password" placeholder='Password' required />
+                <div className='login-popup-inputs'>
+                    {mode === SIGN_UP && <input name='name' onChange={onChangeHandler} value={data.name} type='text' placeholder='Your Name' autoComplete='name' required />}
+                    <input name='email' onChange={onChangeHandler} value={data.email} type='email' placeholder='Your Email' autoComplete='email' required />
+                    <input name='password' onChange={onChangeHandler} value={data.password} type='password' placeholder='Password' autoComplete={mode === LOGIN ? 'current-password' : 'new-password'} required />
                 </div>
-                <button type='submit'>{currrentState === "Sign Up" ? "Create account" : "Login"}</button>
-                <div className="login-popup-condition">
-                    <input type="checkbox" required />
+                <button type='submit'>{mode === SIGN_UP ? 'Create account' : 'Login'}</button>
+                <label className='login-popup-condition'>
+                    <input type='checkbox' required />
                     <p>By continuing, I agree to the terms of use & privacy policy.</p>
-                </div>
-                {currrentState === "Login"
-                    ? <p>Create a new account? <span onClick={()=>setCurrentState("Sign Up")} >Click Here</span> </p>
-                    : <p>Already have an account? <span onClick={()=>setCurrentState("Login")} >Login here</span> </p>
+                </label>
+                {mode === LOGIN
+                    ? <p>Create a new account? <button type='button' className='login-popup-switch' onClick={() => setMode(SIGN_UP)}>Click Here</button></p>
+                    : <p>Already have an account? <button type='button' className='login-popup-switch' onClick={() => setMode(LOGIN)}>Login here</button></p>
                 }
             </form>
-        </div>
+        </Modal>
     )
 }
 

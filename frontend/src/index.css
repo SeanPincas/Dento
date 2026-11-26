@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Noto+Serif+JP:wght@500;700&display=swap');
 
 *{
   padding: 0;
@@ -10,6 +10,14 @@
 
 body{
   min-height: 100vh;
+  /* Full-width sections (the hero) use 100vw, which includes the scrollbar. */
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+/* Keep anchor targets clear of the sticky navbar. */
+[id]{
+  scroll-margin-top: 80px;
 }
 
 a{
@@ -22,6 +30,20 @@ a{
   margin: auto;
 }
 
+/* Phones and tablets get a bottom nav (components/BottomNav); keep the end
+   of every page clear of it. */
+:root{
+  --bottom-nav-h: 0px;
+}
+@media (max-width: 1050px){
+  :root{
+    --bottom-nav-h: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
+  body{
+    padding-bottom: var(--bottom-nav-h);
+  }
+}
+
 @keyframes fadeIn {
   0%{
     opacity: 0;    
@@ -29,4 +51,73 @@ a{
   100%{
     opacity: 1;
   }
+}
+/* The page's own scrollbar is hidden so it doesn't take a strip of width;
+   components/ui/FloatingScrollbar draws a floating handle over the page
+   instead. Scrolling itself (wheel, keys, touch) is unchanged. The styled
+   scrollbar below still applies to inner scroll areas such as search results. */
+html {
+  scrollbar-width: none;
+  /* Nothing may widen the page sideways (the bamboo hangs past the edges);
+     on phones that would zoom the page out and leave a blank strip. */
+  overflow-x: clip;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ---------- Dento scrollbar ----------
+   No track background: just a large rounded brown handle that floats with a
+   small gap around it (the transparent border + padding-box clip), turning
+   Dento green on hover. Chromium, Edge and Safari use the ::-webkit rules;
+   Firefox gets the standard properties in the @supports block (kept separate
+   because newer Chrome ignores the webkit rules where scrollbar-color is set). */
+
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  background-color: #ad7230;
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #033500;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #8f5c24;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: auto;
+    scrollbar-color: #ad7230 transparent;
+  }
+}
+
+
+/* Text for screen readers only (form labels for icon-led inputs). */
+.visually-hidden{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

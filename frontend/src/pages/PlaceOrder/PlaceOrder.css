@@ -33,6 +33,39 @@
     width: 100%;
     max-width: max(40%,500px);
 }
-.place-order .cart-total button{
-    margin-top: 20px;
+.place-order-right{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.place-order-pay{
+    height: 48px;
+    border: none;
+    border-radius: 50px;
+    background: #033500;
+    color: white;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.25s;
+}
+.place-order-pay:hover{
+    background: #ad7230;
+}
+
+@media (max-width: 900px){
+    .place-order{
+        flex-direction: column;
+        gap: 36px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+    .place-order-left,
+    .place-order-right{
+        max-width: none;
+    }
+    .place-order-left .title{
+        margin-bottom: 24px;
+    }
 }

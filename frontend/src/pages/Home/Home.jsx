@@ -8,12 +8,14 @@ import AppDownload from '../../components/AppDownload/AppDownload'
 const Home = () => {
 
     const [category,setCategory] = useState('All');
+    // Set when a plate is picked off the belt, so FoodDisplay can fly it to the dock.
+    const [grab,setGrab] = useState(null);
 
   return (
     <div>
-        <Header/>
-        <ExploreMenu category={category} setCategory={setCategory}/>
-        <FoodDisplay category={category} />
+        <Header setCategory={setCategory}/>
+        <ExploreMenu category={category} setCategory={setCategory} onGrab={setGrab}/>
+        <FoodDisplay category={category} setCategory={setCategory} grab={grab} />
         <AppDownload/>
     </div>
   )

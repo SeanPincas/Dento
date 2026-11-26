@@ -1,0 +1,44 @@
+/* Layer for the two groves. It fills its positioned parent (the counter
+   section) and is not clipped, so the canopies rise above the section into
+   the hero. Everything else in the section sits on top of it. */
+.bamboo-groves {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Each grove is anchored to the bottom of the section (its stalks run down
+   behind the wooden counter) and is taller than the section, so the top
+   ~300px of leaves overlaps the bottom of the hero. */
+.bamboo-grove {
+    position: absolute;
+    bottom: 0;
+    height: 1060px;
+    width: auto;
+    user-select: none;
+}
+
+.bamboo-grove-left {
+    left: -70px;
+}
+
+.bamboo-grove-right {
+    right: -70px;
+}
+
+@media (max-width: 1050px) {
+    .bamboo-grove {
+        height: 760px;
+    }
+    .bamboo-grove-left { left: -110px; }
+    .bamboo-grove-right { right: -110px; }
+}
+
+@media (max-width: 750px) {
+    .bamboo-grove {
+        height: 560px;
+    }
+    .bamboo-grove-left { left: -150px; }
+    .bamboo-grove-right { right: -150px; }
+}

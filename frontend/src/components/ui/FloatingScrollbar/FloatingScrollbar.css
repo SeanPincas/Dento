@@ -1,0 +1,69 @@
+/* Floating page scrollbar: a maki roll that rides the edge of the window.
+   Slightly faded when idle, solid while scrolling; it grows and turns a
+   little when you point at it. 46px on desktop, 36px on tablets, 40px on
+   phones. */
+.floating-scrollbar {
+    --knob: 46px;
+    position: fixed;
+    right: 6px;
+    z-index: 9; /* above the page and navbar, below pop-ups */
+    width: var(--knob);
+    height: var(--knob);
+    opacity: 0.8;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.35));
+    transition: opacity 0.3s, scale 0.25s;
+}
+
+.floating-scrollbar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transition: rotate 0.35s ease;
+}
+
+.floating-scrollbar.is-active {
+    opacity: 1;
+}
+
+/* Hover: the roll grows a little and turns, as if nudged. */
+.floating-scrollbar:hover {
+    opacity: 1;
+    scale: 1.17;
+}
+
+.floating-scrollbar:hover img {
+    rotate: -25deg;
+}
+
+.floating-scrollbar:active {
+    cursor: grabbing;
+}
+
+/* Tablets: smaller. */
+@media (max-width: 1050px) {
+    .floating-scrollbar {
+        --knob: 36px;
+        right: 4px;
+    }
+}
+
+/* Phones: smaller still, on the right edge. */
+@media (max-width: 750px) {
+    .floating-scrollbar {
+        --knob: 40px;
+        right: 3px;
+        filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .floating-scrollbar,
+    .floating-scrollbar img {
+        transition: none;
+    }
+}

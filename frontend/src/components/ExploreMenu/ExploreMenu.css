@@ -1,95 +1,508 @@
+/* Sushi-bar counter category menu: noren banner, a perspective conveyor belt
+   and plates that loop past continuously. */
 .explore-menu {
+    /* Unitless sizes (px) so animation timing can be calculated in every browser. */
+    /* Movement is driven from ExploreMenu.jsx; slat width there must match --slat. */
+    --plate: 160px;
+    --plate-gap: 40px;
+    --slat: 60px;
+    --belt-top: 60px;
+    --belt-h: 120px;
+    /* Headroom above the plates so a lifted or selected plate isn't clipped. */
+    --lift: 18px;
+
+    /* Full width, breaking out of the 80% .app column like the hero. */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    /* Shoji wall (design E): bevelled wooden lattice over warm paper. Each bar
+       has a light edge, a dark edge and a soft shadow cast onto the paper. */
+    position: relative;
+    z-index: 2; /* above the hero, so the bamboo groves can rise over it */
+    isolation: isolate;
+    /* The groves hang past the screen edges: cut them off at the sides, but
+       let them rise above the section into the hero. */
+    overflow-x: clip;
+    padding-top: 40px; /* room for the ranma transom */
+    background-color: #e8d6b4;
+    background-image:
+        linear-gradient(90deg, #2e1b05 0 1px, #9a6a2e 1px 3px, #6b4517 3px 6px, #3b2408 6px 8px, rgba(40, 20, 0, 0.2) 8px 14px, transparent 14px),
+        linear-gradient(#2e1b05 0 1px, #9a6a2e 1px 3px, #6b4517 3px 6px, #3b2408 6px 8px, rgba(40, 20, 0, 0.18) 8px 14px, transparent 14px),
+        radial-gradient(ellipse at 50% 35%, rgba(255, 236, 196, 0.55), rgba(255, 236, 196, 0) 60%),
+        repeating-linear-gradient(90deg, rgba(120, 80, 30, 0.04) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(0deg, rgba(120, 80, 30, 0.035) 0 1px, transparent 1px 7px);
+    background-size: 96px 100%, 100% 84px, 100% 100%, auto, auto;
+    box-shadow: inset 0 56px 40px -10px rgba(30, 15, 0, 0.45), inset 0 0 90px rgba(60, 30, 0, 0.35);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    --section-gap: 34px;
+    gap: var(--section-gap);
+    color: #033500;
 }
 
-.explore-menu h1 {
-    color: #033500;
+/* Content sits above the decor layer. */
+.explore-menu > :not(.shoji-wall):not(.bamboo-groves) {
+    position: relative;
+    z-index: 1;
+}
+
+.shoji-wall {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Soft shadows of bamboo outside, falling on the paper (kage-e). */
+.shoji-kage-stalk {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 8px;
+    background: rgba(40, 60, 20, 0.26);
+    filter: blur(3px);
+}
+
+.shoji-kage-leaf {
+    position: absolute;
+    width: 70px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(40, 60, 20, 0.24);
+    filter: blur(2px);
+}
+
+/* Carved ranma transom along the top: diamond lattice in a bevelled frame. */
+.shoji-ranma {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 40px;
+    background-color: #e8d6b4;
+    background-image:
+        repeating-linear-gradient(45deg, transparent 0 14px, #3b2408 14px 18px),
+        repeating-linear-gradient(-45deg, transparent 0 14px, #3b2408 14px 18px);
+    box-shadow: inset 0 0 0 6px #5a3912, inset 0 0 0 8px #9a6a2e, inset 0 10px 14px rgba(30, 15, 0, 0.45), 0 6px 0 #3b2408, 0 14px 22px rgba(30, 15, 0, 0.45);
+}
+
+
+.explore-menu-noren {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.explore-menu-noren span {
+    width: 64px;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #033500;
+    color: #fffdf9;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 10px 18px rgba(40, 25, 5, 0.3);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 30px;
+}
+
+.explore-menu-heading {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    /* Soft paper-coloured glow so the text never sits on a lattice line. */
+    background: radial-gradient(ellipse at center, rgba(232, 214, 180, 0.95) 40%, rgba(232, 214, 180, 0) 75%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+}
+
+.explore-menu-heading h1 {
+    font-size: max(3vw, 30px);
     font-weight: 500;
-    padding-top: 10px;
 }
 
 .explore-menu-text {
-    max-width: 60%;
-    color: #033500;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #2f4a2c;
+    /* Two short lines, kept clear of the bamboo at the sides. */
+    max-width: 470px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-wrap: balance;
 }
 
-.explore-menu-list {
+.kaiten-lanes {
     display: flex;
-    justify-content: flex-start; /* changed from space-between to allow scrolling */
-    align-items: center;
-    gap: 10px;
-    text-align: center;
-    margin: 20px 0px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    scroll-behavior: smooth;
-    scrollbar-width: thin; /* for Firefox */
-    scrollbar-color: #ccc transparent;
+    flex-direction: column;
 }
 
-.explore-menu-list::-webkit-scrollbar {
-    height: 6px;
+/* Phones: one loop of plates over two empty counters (KaitenLoop). */
+.kaiten-loop {
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
-.explore-menu-list::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border-radius: 4px;
+.kaiten-loop-plates {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+    pointer-events: none;
 }
 
-.explore-menu-list::-webkit-scrollbar-track {
-    background: transparent;
+.kaiten-loop-plates .kaiten-dish {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    pointer-events: auto;
+    will-change: transform;
 }
 
-/* Optional: hide scrollbar by default and show on hover */
-.explore-menu-list {
-    scrollbar-width: none; /* Firefox */
-}
-.explore-menu-list::-webkit-scrollbar {
-    display: none; /* Chrome */
-}
-.explore-menu-list:hover {
-    scrollbar-width: thin;
-}
-.explore-menu-list:hover::-webkit-scrollbar {
-    display: block;
+/* Gives each empty counter the height of a plate and its tag. */
+.kaiten-dish-sample {
+    visibility: hidden;
+    pointer-events: none;
 }
 
-/* Menu Item Styles */
-.explore-menu-list-item img {
-    width: 7.5vw;
-    min-width: 80px;
-    cursor: pointer;
+.kaiten-bar {
+    position: relative;
+    overflow: hidden;
+    /* Wood below the name tags; the same gap sits above them (see .kaiten-tag). */
+    padding-bottom: 18px;
+}
+
+/* The belt surface leans back in perspective. It is wider than the screen so
+   its far edge still reaches both sides and the belt reads as continuous. */
+.kaiten-belt {
+    position: absolute;
+    left: -40%;
+    right: -40%;
+    top: calc(var(--belt-top) + var(--lift));
+    height: var(--belt-h);
+    perspective: 700px;
+}
+
+.kaiten-belt-surface {
+    height: 100%;
+    transform: rotateX(58deg);
+    transform-origin: bottom;
+    background: repeating-linear-gradient(90deg, #3d6b36 0 calc(var(--slat) - 4px), #2a5424 calc(var(--slat) - 4px) var(--slat));
+    box-shadow: inset 0 8px 0 #ad7230;
+}
+
+.kaiten-window {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    padding-top: var(--lift);
+}
+
+.kaiten-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+}
+
+/* Arrow buttons: glide the belt three plates, then it waits 3s before running again. */
+.kaiten-arrow {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--lift) + var(--plate) / 2 - 26px);
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    transition: 0.2s;
+    border: 2px solid #fffdf9;
+    background: #ad7230;
+    color: #fffdf9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(3, 53, 0, 0.35);
+    transition: background 0.25s, transform 0.25s;
 }
 
-.explore-menu-list-item p {
-    margin-top: 10px;
-    color: #033500;
-    font-size: max(1.4vh, 16px);
+.kaiten-arrow:hover,
+.kaiten-arrow:focus-visible {
+    background: #8f5c24;
+    transform: scale(1.08);
+}
+
+.kaiten-arrow:focus-visible {
+    outline: 3px solid #f0c48a;
+    outline-offset: 3px;
+}
+
+.kaiten-arrow-left {
+    left: max(24px, 4vw);
+}
+
+.kaiten-arrow-right {
+    right: max(24px, 4vw);
+}
+
+.kaiten-dish {
+    width: var(--plate);
+    flex: none;
+    /* Space after every plate keeps both copies exactly the same width, so the
+       loop restarts without a jump. */
+    margin-right: var(--plate-gap);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: none;
+    background: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
     cursor: pointer;
 }
 
-/* Active state */
-.explore-menu-list-item .active {
-    border: 6px solid #033500;
-    padding: 4px;
+/* Plates on the belt use ui/CeramicPlate; here only size, the selected ring
+   and the hover/selected movement. Two classes so the size wins over
+   CeramicPlate's 160px default whichever stylesheet loads last. */
+.kaiten-dish .kaiten-plate {
+    --plate-size: var(--plate);
+    outline: 5px solid transparent;
+    outline-offset: 2px;
+    transition: transform 0.3s, box-shadow 0.3s, outline-color 0.25s;
 }
 
-/* Divider */
-.explore-menu hr {
-    margin: 10px 0px;
-    height: 4px;
-    background-color: #033500;
-    border: none;
+.kaiten-dish:hover .kaiten-plate,
+.kaiten-dish:focus-visible .kaiten-plate {
+    --plate-shadow: 0 36px 26px -10px rgba(3, 53, 0, 0.42);
+    transform: translateY(-6px);
 }
 
-/* Responsive */
+.kaiten-tag {
+    /* Centred in the wood: the belt ends 1/8 of a plate below the plates,
+       then 18px of wood, the tag, and 18px of wood (.kaiten-bar padding). */
+    margin-top: calc(var(--plate) * 0.125 + 18px);
+    min-width: 104px;
+    padding: 9px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    background: #fffdf9;
+    color: #033500; /* the section text is cream; tags keep dark text */
+    border: 1px solid #e2d3bf;
+    transition: transform 0.25s, background 0.25s, color 0.25s;
+}
+
+.kaiten-tag-jp {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.kaiten-tag-name {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.kaiten-dish:hover .kaiten-tag,
+.kaiten-dish:focus-visible .kaiten-tag,
+.kaiten-dish.active .kaiten-tag {
+    transform: translateY(-6px);
+    background: #033500;
+    border-color: #033500;
+    color: white;
+}
+
+/* Selected category: the plate grows instead of lifting, and its tag stays put. */
+.kaiten-dish.active .kaiten-plate {
+    outline-color: #ad7230;
+    transform: scale(1.12);
+}
+
+.kaiten-dish.active .kaiten-tag {
+    transform: none;
+}
+
+.kaiten-dish:focus-visible {
+    outline: none;
+}
+
+/* Wooden counter front: starts right where the belt ends and runs to the
+   bottom, so the name tags sit on the wood with no gap above it. */
+.kaiten-counter {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* 2px of overlap: with sizes in vw the belt can end on a fraction of a
+       pixel, which left a thin line of wall showing between belt and wood. */
+    top: calc(var(--belt-top) + var(--lift) + var(--belt-h) - 2px);
+    bottom: 0;
+    box-shadow: inset 0 6px 10px rgba(0, 0, 0, 0.18), 0 10px 20px rgba(3, 53, 0, 0.18);
+    background: repeating-linear-gradient(90deg, #9c6428 0 3px, #ad7230 3px 40px, #a66c2c 40px 44px, #b77a37 44px 90px);
+}
+
+/* Brick walkway in front of the counter: running-bond bricks fading from
+   grey to near-black, with a shadow cast by the counter. */
+.explore-menu-floor {
+    height: 132px;
+    margin-top: calc(-1 * var(--section-gap)); /* sit directly under the counter (cancels the section gap) */
+    overflow: hidden;
+    /* One-point perspective: the eye looks down from above the centre, so the
+       floor's lines converge toward a vanishing point in the middle. */
+    perspective: 520px;
+    perspective-origin: 50% 0%;
+    background: #121212;
+}
+
+/* The cobblestone plane, laid flat and tilted away (near edge at the bottom).
+   It is much wider than the screen so the far edge still reaches both sides.
+   Cobblestones: varied sizes, roundness, tilt and shade, generated once with a
+   fixed seed and tiled seamlessly. */
+.explore-menu-floor::before {
+    content: '';
+    position: absolute;
+    left: -70%;
+    right: -70%;
+    bottom: 0;
+    height: 540px; /* long enough that, tilted back, it still reaches the counter */
+    transform-origin: 50% 100%;
+    transform: rotateX(62deg);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='132'%3E%3Crect width='260' height='132' fill='%231c1c1b'/%3E%3Cg transform='rotate%281.0 17.0 14.5%29'%3E%3Crect x='4.2' y='4.7' width='25.5' height='22.5' rx='7.6' fill='%23151515'/%3E%3Crect x='4.2' y='3.2' width='25.5' height='22.5' rx='7.6' fill='%234a4844'/%3E%3Crect x='8.1' y='4.7' width='15.3' height='5.0' rx='2.5' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%281.0 17.0 146.5%29'%3E%3Crect x='4.2' y='136.7' width='25.5' height='22.5' rx='7.6' fill='%23151515'/%3E%3Crect x='4.2' y='135.2' width='25.5' height='22.5' rx='7.6' fill='%234a4844'/%3E%3Crect x='8.1' y='136.7' width='15.3' height='5.0' rx='2.5' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%281.0 277.0 14.5%29'%3E%3Crect x='264.2' y='4.7' width='25.5' height='22.5' rx='7.6' fill='%23151515'/%3E%3Crect x='264.2' y='3.2' width='25.5' height='22.5' rx='7.6' fill='%234a4844'/%3E%3Crect x='268.1' y='4.7' width='15.3' height='5.0' rx='2.5' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%281.0 277.0 146.5%29'%3E%3Crect x='264.2' y='136.7' width='25.5' height='22.5' rx='7.6' fill='%23151515'/%3E%3Crect x='264.2' y='135.2' width='25.5' height='22.5' rx='7.6' fill='%234a4844'/%3E%3Crect x='268.1' y='136.7' width='15.3' height='5.0' rx='2.5' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-5.2 51.0 14.5%29'%3E%3Crect x='35.1' y='3.6' width='31.9' height='24.9' rx='9.9' fill='%23151515'/%3E%3Crect x='35.1' y='2.1' width='31.9' height='24.9' rx='9.9' fill='%233f3f3f'/%3E%3Crect x='39.8' y='3.6' width='19.1' height='5.5' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-5.2 51.0 146.5%29'%3E%3Crect x='35.1' y='135.6' width='31.9' height='24.9' rx='9.9' fill='%23151515'/%3E%3Crect x='35.1' y='134.1' width='31.9' height='24.9' rx='9.9' fill='%233f3f3f'/%3E%3Crect x='39.8' y='135.6' width='19.1' height='5.5' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.5 92.5 14.5%29'%3E%3Crect x='71.6' y='4.1' width='41.7' height='23.7' rx='11.1' fill='%23151515'/%3E%3Crect x='71.6' y='2.6' width='41.7' height='23.7' rx='11.1' fill='%23454545'/%3E%3Crect x='77.9' y='4.1' width='25.0' height='5.2' rx='2.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.5 92.5 146.5%29'%3E%3Crect x='71.6' y='136.1' width='41.7' height='23.7' rx='11.1' fill='%23151515'/%3E%3Crect x='71.6' y='134.6' width='41.7' height='23.7' rx='11.1' fill='%23454545'/%3E%3Crect x='77.9' y='136.1' width='25.0' height='5.2' rx='2.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%280.9 141.0 14.5%29'%3E%3Crect x='118.9' y='4.4' width='44.1' height='23.1' rx='11.3' fill='%23151515'/%3E%3Crect x='118.9' y='2.9' width='44.1' height='23.1' rx='11.3' fill='%23424240'/%3E%3Crect x='125.6' y='4.4' width='26.5' height='5.1' rx='2.5' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%280.9 141.0 146.5%29'%3E%3Crect x='118.9' y='136.4' width='44.1' height='23.1' rx='11.3' fill='%23151515'/%3E%3Crect x='118.9' y='134.9' width='44.1' height='23.1' rx='11.3' fill='%23424240'/%3E%3Crect x='125.6' y='136.4' width='26.5' height='5.1' rx='2.5' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%284.3 181.5 14.5%29'%3E%3Crect x='169.5' y='5.0' width='24.1' height='22.1' rx='7.2' fill='%23151515'/%3E%3Crect x='169.5' y='3.5' width='24.1' height='22.1' rx='7.2' fill='%234b4b4b'/%3E%3Crect x='173.1' y='5.0' width='14.4' height='4.9' rx='2.4' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%284.3 181.5 146.5%29'%3E%3Crect x='169.5' y='137.0' width='24.1' height='22.1' rx='7.2' fill='%23151515'/%3E%3Crect x='169.5' y='135.5' width='24.1' height='22.1' rx='7.2' fill='%234b4b4b'/%3E%3Crect x='173.1' y='137.0' width='14.4' height='4.9' rx='2.4' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-2.3 -31.0 14.5%29'%3E%3Crect x='-60.8' y='3.7' width='59.6' height='24.6' rx='8.4' fill='%23151515'/%3E%3Crect x='-60.8' y='2.2' width='59.6' height='24.6' rx='8.4' fill='%23505050'/%3E%3Crect x='-51.8' y='3.7' width='35.7' height='5.4' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-2.3 -31.0 146.5%29'%3E%3Crect x='-60.8' y='135.7' width='59.6' height='24.6' rx='8.4' fill='%23151515'/%3E%3Crect x='-60.8' y='134.2' width='59.6' height='24.6' rx='8.4' fill='%23505050'/%3E%3Crect x='-51.8' y='135.7' width='35.7' height='5.4' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-2.3 229.0 14.5%29'%3E%3Crect x='199.2' y='3.7' width='59.6' height='24.6' rx='8.4' fill='%23151515'/%3E%3Crect x='199.2' y='2.2' width='59.6' height='24.6' rx='8.4' fill='%23505050'/%3E%3Crect x='208.2' y='3.7' width='35.7' height='5.4' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-2.3 229.0 146.5%29'%3E%3Crect x='199.2' y='135.7' width='59.6' height='24.6' rx='8.4' fill='%23151515'/%3E%3Crect x='199.2' y='134.2' width='59.6' height='24.6' rx='8.4' fill='%23505050'/%3E%3Crect x='208.2' y='135.7' width='35.7' height='5.4' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-3.7 38.5 42.0%29'%3E%3Crect x='23.2' y='32.7' width='30.7' height='21.7' rx='9.2' fill='%23151515'/%3E%3Crect x='23.2' y='31.2' width='30.7' height='21.7' rx='9.2' fill='%233f3f3f'/%3E%3Crect x='27.8' y='32.7' width='18.4' height='4.8' rx='2.4' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%281.4 79.5 42.0%29'%3E%3Crect x='59.1' y='33.6' width='40.9' height='19.9' rx='8.4' fill='%23151515'/%3E%3Crect x='59.1' y='32.1' width='40.9' height='19.9' rx='8.4' fill='%23424240'/%3E%3Crect x='65.2' y='33.6' width='24.5' height='4.4' rx='2.2' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.4 128.5 42.0%29'%3E%3Crect x='105.8' y='33.3' width='45.4' height='20.4' rx='9.4' fill='%23151515'/%3E%3Crect x='105.8' y='31.8' width='45.4' height='20.4' rx='9.4' fill='%23424240'/%3E%3Crect x='112.6' y='33.3' width='27.2' height='4.5' rx='2.2' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%282.4 174.5 42.0%29'%3E%3Crect x='156.4' y='32.9' width='36.1' height='21.1' rx='9.8' fill='%23151515'/%3E%3Crect x='156.4' y='31.4' width='36.1' height='21.1' rx='9.8' fill='%23454545'/%3E%3Crect x='161.9' y='32.9' width='21.7' height='4.6' rx='2.3' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%284.5 211.0 42.0%29'%3E%3Crect x='197.9' y='33.4' width='26.3' height='20.3' rx='8.4' fill='%23151515'/%3E%3Crect x='197.9' y='31.9' width='26.3' height='20.3' rx='8.4' fill='%233c3c3c'/%3E%3Crect x='201.8' y='33.4' width='15.8' height='4.5' rx='2.2' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.6 -6.0 42.0%29'%3E%3Crect x='-30.6' y='32.9' width='49.1' height='21.1' rx='10.5' fill='%23151515'/%3E%3Crect x='-30.6' y='31.4' width='49.1' height='21.1' rx='10.5' fill='%23424240'/%3E%3Crect x='-23.2' y='32.9' width='29.5' height='4.6' rx='2.3' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.6 254.0 42.0%29'%3E%3Crect x='229.4' y='32.9' width='49.1' height='21.1' rx='10.5' fill='%23151515'/%3E%3Crect x='229.4' y='31.4' width='49.1' height='21.1' rx='10.5' fill='%23424240'/%3E%3Crect x='236.8' y='32.9' width='29.5' height='4.6' rx='2.3' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.9 32.0 70.0%29'%3E%3Crect x='7.5' y='59.0' width='49.0' height='25.0' rx='12.2' fill='%23151515'/%3E%3Crect x='7.5' y='57.5' width='49.0' height='25.0' rx='12.2' fill='%233c3c3c'/%3E%3Crect x='14.9' y='59.0' width='29.4' height='5.5' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.9 292.0 70.0%29'%3E%3Crect x='267.5' y='59.0' width='49.0' height='25.0' rx='12.2' fill='%23151515'/%3E%3Crect x='267.5' y='57.5' width='49.0' height='25.0' rx='12.2' fill='%233c3c3c'/%3E%3Crect x='274.9' y='59.0' width='29.4' height='5.5' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%284.5 75.0 70.0%29'%3E%3Crect x='62.1' y='59.6' width='25.7' height='23.7' rx='10.0' fill='%23151515'/%3E%3Crect x='62.1' y='58.1' width='25.7' height='23.7' rx='10.0' fill='%234b4b4b'/%3E%3Crect x='66.0' y='59.6' width='15.4' height='5.2' rx='2.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%281.0 111.0 70.0%29'%3E%3Crect x='94.0' y='59.5' width='33.9' height='23.9' rx='10.2' fill='%23151515'/%3E%3Crect x='94.0' y='58.0' width='33.9' height='23.9' rx='10.2' fill='%23424240'/%3E%3Crect x='99.1' y='59.5' width='20.3' height='5.3' rx='2.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.3 147.0 70.0%29'%3E%3Crect x='134.3' y='59.8' width='25.5' height='23.5' rx='11.5' fill='%23151515'/%3E%3Crect x='134.3' y='58.3' width='25.5' height='23.5' rx='11.5' fill='%233c3c3c'/%3E%3Crect x='138.1' y='59.8' width='15.3' height='5.2' rx='2.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%281.8 179.0 70.0%29'%3E%3Crect x='165.1' y='58.6' width='27.8' height='25.8' rx='11.5' fill='%23151515'/%3E%3Crect x='165.1' y='57.1' width='27.8' height='25.8' rx='11.5' fill='%233c3c3c'/%3E%3Crect x='169.3' y='58.6' width='16.7' height='5.7' rx='2.8' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%284.6 -30.0 70.0%29'%3E%3Crect x='-62.3' y='59.2' width='64.7' height='24.7' rx='11.1' fill='%23151515'/%3E%3Crect x='-62.3' y='57.7' width='64.7' height='24.7' rx='11.1' fill='%234b4b4b'/%3E%3Crect x='-52.6' y='59.2' width='38.8' height='5.4' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%284.6 230.0 70.0%29'%3E%3Crect x='197.7' y='59.2' width='64.7' height='24.7' rx='11.1' fill='%23151515'/%3E%3Crect x='197.7' y='57.7' width='64.7' height='24.7' rx='11.1' fill='%234b4b4b'/%3E%3Crect x='207.4' y='59.2' width='38.8' height='5.4' rx='2.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.1 22.0 -23.5%29'%3E%3Crect x='2.5' y='-43.0' width='38.9' height='41.9' rx='16.7' fill='%23151515'/%3E%3Crect x='2.5' y='-44.5' width='38.9' height='41.9' rx='16.7' fill='%23454545'/%3E%3Crect x='8.4' y='-43.0' width='23.4' height='9.2' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.1 22.0 108.5%29'%3E%3Crect x='2.5' y='89.0' width='38.9' height='41.9' rx='16.7' fill='%23151515'/%3E%3Crect x='2.5' y='87.5' width='38.9' height='41.9' rx='16.7' fill='%23454545'/%3E%3Crect x='8.4' y='89.0' width='23.4' height='9.2' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.1 282.0 -23.5%29'%3E%3Crect x='262.5' y='-43.0' width='38.9' height='41.9' rx='16.7' fill='%23151515'/%3E%3Crect x='262.5' y='-44.5' width='38.9' height='41.9' rx='16.7' fill='%23454545'/%3E%3Crect x='268.4' y='-43.0' width='23.4' height='9.2' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-0.1 282.0 108.5%29'%3E%3Crect x='262.5' y='89.0' width='38.9' height='41.9' rx='16.7' fill='%23151515'/%3E%3Crect x='262.5' y='87.5' width='38.9' height='41.9' rx='16.7' fill='%23454545'/%3E%3Crect x='268.4' y='89.0' width='23.4' height='9.2' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-1.2 71.0 -23.5%29'%3E%3Crect x='46.4' y='-43.1' width='49.1' height='42.1' rx='19.1' fill='%23151515'/%3E%3Crect x='46.4' y='-44.6' width='49.1' height='42.1' rx='19.1' fill='%23505050'/%3E%3Crect x='53.8' y='-43.1' width='29.5' height='9.3' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-1.2 71.0 108.5%29'%3E%3Crect x='46.4' y='88.9' width='49.1' height='42.1' rx='19.1' fill='%23151515'/%3E%3Crect x='46.4' y='87.4' width='49.1' height='42.1' rx='19.1' fill='%23505050'/%3E%3Crect x='53.8' y='88.9' width='29.5' height='9.3' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%280.6 120.5 -23.5%29'%3E%3Crect x='100.1' y='-43.4' width='40.8' height='42.8' rx='16.3' fill='%23151515'/%3E%3Crect x='100.1' y='-44.9' width='40.8' height='42.8' rx='16.3' fill='%23454545'/%3E%3Crect x='106.2' y='-43.4' width='24.5' height='9.4' rx='4.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%280.6 120.5 108.5%29'%3E%3Crect x='100.1' y='88.6' width='40.8' height='42.8' rx='16.3' fill='%23151515'/%3E%3Crect x='100.1' y='87.1' width='40.8' height='42.8' rx='16.3' fill='%23454545'/%3E%3Crect x='106.2' y='88.6' width='24.5' height='9.4' rx='4.7' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%282.5 171.0 -23.5%29'%3E%3Crect x='145.6' y='-42.9' width='50.7' height='41.7' rx='17.5' fill='%23151515'/%3E%3Crect x='145.6' y='-44.4' width='50.7' height='41.7' rx='17.5' fill='%234b4b4b'/%3E%3Crect x='153.3' y='-42.9' width='30.4' height='9.2' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%282.5 171.0 108.5%29'%3E%3Crect x='145.6' y='89.1' width='50.7' height='41.7' rx='17.5' fill='%23151515'/%3E%3Crect x='145.6' y='87.6' width='50.7' height='41.7' rx='17.5' fill='%234b4b4b'/%3E%3Crect x='153.3' y='89.1' width='30.4' height='9.2' rx='4.6' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.2 -30.5 -23.5%29'%3E%3Crect x='-57.7' y='-42.2' width='54.3' height='40.3' rx='19.9' fill='%23151515'/%3E%3Crect x='-57.7' y='-43.7' width='54.3' height='40.3' rx='19.9' fill='%23454545'/%3E%3Crect x='-49.5' y='-42.2' width='32.6' height='8.9' rx='4.4' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.2 -30.5 108.5%29'%3E%3Crect x='-57.7' y='89.8' width='54.3' height='40.3' rx='19.9' fill='%23151515'/%3E%3Crect x='-57.7' y='88.3' width='54.3' height='40.3' rx='19.9' fill='%23454545'/%3E%3Crect x='-49.5' y='89.8' width='32.6' height='8.9' rx='4.4' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.2 229.5 -23.5%29'%3E%3Crect x='202.3' y='-42.2' width='54.3' height='40.3' rx='19.9' fill='%23151515'/%3E%3Crect x='202.3' y='-43.7' width='54.3' height='40.3' rx='19.9' fill='%23454545'/%3E%3Crect x='210.5' y='-42.2' width='32.6' height='8.9' rx='4.4' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3Cg transform='rotate%28-4.2 229.5 108.5%29'%3E%3Crect x='202.3' y='89.8' width='54.3' height='40.3' rx='19.9' fill='%23151515'/%3E%3Crect x='202.3' y='88.3' width='54.3' height='40.3' rx='19.9' fill='%23454545'/%3E%3Crect x='210.5' y='89.8' width='32.6' height='8.9' rx='4.4' fill='%23ffffff' opacity='0.09'/%3E%3C/g%3E%3C/svg%3E") 50% 100% / 260px 132px;
+}
+
+/* Lighting, not tilted: the counter's shadow along the top, fading darker toward the bottom. */
+.explore-menu-floor::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0, rgba(0, 0, 0, 0) 30px),
+        linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+
+/* Tablets and phones: the plates shrink with the screen, so about as many
+   ride past as on a desktop and it still reads as one long conveyor. The
+   belt keeps the desktop proportions to the plate (3/8 above, 3/4 tall). */
 @media (max-width: 1050px) {
+    .explore-menu {
+        --plate: max(60px, 10.5vw);
+        --plate-gap: max(14px, 2.6vw);
+        --belt-top: calc(var(--plate) * 0.375);
+        --belt-h: calc(var(--plate) * 0.75);
+        --section-gap: 24px;
+        padding-top: 32px;
+    }
+    .explore-menu-noren span {
+        width: 50px;
+        height: 66px;
+        font-size: 23px;
+    }
+    .explore-menu-heading {
+        gap: 8px;
+        padding: 10px 24px;
+    }
+    .explore-menu-heading h1 {
+        font-size: 28px;
+    }
     .explore-menu-text {
-        max-width: 100%;
+        font-size: 15px;
+    }
+    /* Tags sit in the middle of the wood: the belt reaches 1/8 of a plate
+       below the plates, then the same 14px of wood above and below the tag. */
+    .kaiten-bar {
+        padding-bottom: 14px;
+    }
+    .kaiten-tag {
+        margin-top: calc(var(--plate) * 0.125 + 14px);
+        min-width: 78px;
+        padding: 6px 14px;
+        border-radius: 9px;
+    }
+    .kaiten-tag-jp {
+        font-size: 11px;
+    }
+    .kaiten-tag-name {
         font-size: 14px;
+        white-space: nowrap;
+    }
+    .kaiten-arrow {
+        width: 38px;
+        height: 38px;
+        top: calc(var(--lift) + var(--plate) / 2 - 19px);
+    }
+    .explore-menu-floor {
+        height: 104px;
+    }
+}
+
+@media (max-width: 750px) {
+    .explore-menu {
+        --section-gap: 20px;
+        /* Two belts on phones (half the categories each), so the plates can
+           be bigger than one belt would allow. */
+        --plate: 78px;
+        --plate-gap: 22px;
+    }
+    /* Cobblestones between the two counters. The lower counter is pulled up
+       over the stones so its belt stands on them, with no wall showing. */
+    /* The tilted belt only fills the bottom ~53% of its box, so the overlap
+       also covers the empty top of the belt, or a strip of wall shows. */
+    .explore-menu {
+        --lower-overlap: calc(var(--lift) + var(--belt-top) + var(--belt-h) * 0.47);
+    }
+    .explore-menu-floor.explore-menu-floor-mid {
+        position: relative;
+        margin-top: 0;
+        height: calc(44px + var(--lower-overlap));
+    }
+    .kaiten-bar-lower {
+        margin-top: calc(-1 * var(--lower-overlap));
+    }
+    /* Zero-height row above the stones holding the shared arrows, centred on
+       the 44px of stone that shows; above the lower counter. */
+    .kaiten-mid-controls {
+        position: relative;
+        z-index: 3;
+        height: 0;
+    }
+    .kaiten-mid-controls .kaiten-arrow {
+        top: 5px; /* (44px - 34px) / 2 */
+    }
+    .explore-menu-noren span {
+        width: 40px;
+        height: 54px;
+        font-size: 19px;
+    }
+    .explore-menu-heading h1 {
+        font-size: 24px;
+    }
+    .explore-menu-text {
+        font-size: 14px;
+    }
+    .kaiten-bar {
+        padding-bottom: 10px;
+    }
+    .kaiten-tag {
+        margin-top: calc(var(--plate) * 0.125 + 10px);
+        min-width: 0;
+        padding: 4px 10px;
+    }
+    .kaiten-tag-jp {
+        display: none;
+    }
+    .kaiten-tag-name {
+        font-size: 12px;
+    }
+    .kaiten-arrow {
+        width: 34px;
+        height: 34px;
+        top: calc(var(--lift) + var(--plate) / 2 - 17px);
+    }
+    .explore-menu-floor {
+        height: 84px;
     }
 }

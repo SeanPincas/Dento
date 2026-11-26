@@ -1,0 +1,12 @@
+/* The slip fills the sheet; its dish list scrolls if the order is long. */
+.order-sheet .order-slip-wrap {
+    flex: 1 1 auto;
+    filter: none;
+}
+
+.order-sheet .order-slip {
+    padding: 4px 2px 16px;
+    border-radius: 0;
+    -webkit-mask: none;
+    mask: none;
+}

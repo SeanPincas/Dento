@@ -1,70 +1,203 @@
+/* Noren Night hero: full-width photo with a dark green tint, two noren
+   curtain panels, a dish search bar and category shortcuts. */
 .header {
-    height: 34vw;
-    margin: 30px auto;
     position: relative;
+    /* Break out of the 80% .app container so the hero spans the window. */
+    width: 100vw;
+    /* Slide up under the transparent navbar (68px, 62px under 1050px, 52px under 750px). */
+    margin: -68px 0 0 calc(50% - 50vw);
+    padding-top: 68px;
+    min-height: 640px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/header_img.png') center / cover no-repeat;
+    transform: scaleX(-1);
+    z-index: -2;
 }
 
 .header::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/header_img.png') no-repeat;
-    background-size: contain;
-    transform: scaleX(-1); /* Flip horizontally */
-    z-index: -1; /* Ensure it's behind content */
+    inset: 0;
+    background: linear-gradient(180deg, rgba(3, 53, 0, 0.72) 0%, rgba(3, 53, 0, 0.55) 45%, rgba(2, 30, 0, 0.92) 100%);
+    z-index: -1;
 }
 
-.header-contents{
-    position: absolute;
+.header-noren {
+    display: flex;
+    gap: 6px;
+}
+
+.header-noren-panel {
+    width: 96px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ad7230;
+    color: white;
+    border-radius: 0 0 6px 6px;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 52px;
+    box-shadow: 0 18px 30px rgba(0, 0, 0, 0.3);
+    transform-origin: top center;
+    animation: norenSway 4s ease-in-out infinite alternate;
+}
+
+.header-noren-panel-light {
+    background: #f6efe6;
+    color: #033500;
+    animation-delay: -2s;
+}
+
+@keyframes norenSway {
+    from { transform: rotate(-1.2deg); }
+    to { transform: rotate(1.2deg); }
+}
+
+.header-contents {
+    width: 100%;
+    max-width: 900px;
+    padding: 40px 32px 64px;
     display: flex;
     flex-direction: column;
-    align-items: start;
-    gap: 1.5vw;
-    max-width: 50%;
-    bottom: 10%;
-    left: 6vw;
-    animation: fadeIn 3s;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+    animation: fadeIn 1.5s;
 }
 
-.header-contents h2{
-    font-weight: 500;
-    color: white;
-    font-size: max(4.2vw, 22px);
-    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+.header-eyebrow {
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #f0c48a;
 }
 
-.header-contents p{
-    color: white;
-    font-size: 1vw;
-    text-shadow: 10px rgba(0, 0, 0, 0.5);
+.header-contents h1 {
+    font-size: max(4.6vw, 34px);
+    line-height: 1.04;
+    font-weight: 600;
+    letter-spacing: -1.5px;
 }
 
-.header-contents button{
-    border: none;
-    color: #033500;
-    font-weight: 500;
-    padding: 1vw 2.3vw;
-    background-color: white;
-    font-size: max(1vw, 13px);
+.header-contents p {
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 600px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.header-search {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px 8px 22px;
+    background: white;
     border-radius: 50px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
-@media (max-width:1050px) {
-    .header-contents{
-        max-width: 45%;
-    }
+.header-search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    font-size: 17px;
+    color: #033500;
+    background: transparent;
 }
-@media (max-width:750px) {
-    .header-contents{
-        max-width: 65%;
-    }
-    .header-contents p{
-        display: none;
-    }
-    .header-contents button{
-        padding: 2vw 4vw;
-    }
+
+.header-search button {
+    height: 48px;
+    padding: 0 28px;
+    border-radius: 50px;
+    border: none;
+    background: #033500;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.header-search button:hover {
+    background: #ad7230;
+}
+
+.header-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.header-chips button,
+.header-chips a {
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: transparent;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.header-chips button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: white;
+}
+
+.header-chips .header-chip-primary {
+    background: #ad7230;
+    border-color: #ad7230;
+}
+
+.header-chips .header-chip-primary:hover {
+    background: #8f5c24;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .header-noren-panel { animation: none; }
+}
+
+@media (max-width: 1050px) {
+    .header { margin-top: -62px; padding-top: 62px; }
+    /* Leave room at the bottom for the bamboo canopies, so they cover photo
+       and not the search bar or category chips. */
+    .header-contents { padding-bottom: 150px; }
+}
+
+@media (max-width: 750px) {
+    .header { min-height: 560px; margin-top: -52px; padding-top: 52px; } /* slimmer navbar on phones */
+    .header-noren-panel { width: 70px; height: 110px; font-size: 38px; }
+    .header-contents { padding: 28px 20px 120px; gap: 18px; }
+    .header-chips { gap: 8px; }
+    .header-chips button,
+    .header-chips a { padding: 8px 14px; font-size: 14px; }
+    .header-contents p { font-size: 16px; }
+    .header-search { padding-left: 16px; }
+    .header-search button { padding: 0 18px; }
 }

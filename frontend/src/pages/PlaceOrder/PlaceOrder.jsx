@@ -1,125 +1,93 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './PlaceOrder.css'
 import { StoreContext } from '../../context/StoreContext'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../../services/api'
+import OrderTray from '../../components/OrderTray/OrderTray'
+
+const EMPTY_ADDRESS = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  street: '',
+  city: '',
+  province: '',
+  zipcode: '',
+  country: '',
+  phone: '',
+}
+
+// [field, placeholder, input type] in rows; two fields in a row sit side by side.
+const ADDRESS_ROWS = [
+  [['firstName', 'First Name'], ['lastName', 'Last Name']],
+  [['email', 'Email Address', 'email']],
+  [['street', 'Street']],
+  [['city', 'City'], ['province', 'Province']],
+  [['zipcode', 'Zip code'], ['country', 'Country']],
+  [['phone', 'Phone Number', 'tel']],
+]
 
 const PlaceOrder = () => {
 
-  const { getTotalCartAmount, token, food_list, cartItems, url } = useContext(StoreContext)
-
-  const [data, setData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    city: "",
-    province: "",
-    zipcode: "",
-    country: "",
-    phone: ""
-  })
+  const { getTotalCartAmount, getOrderTotal, token, food_list, cartItems, setShowLogin } = useContext(StoreContext)
+  const [data, setData] = useState(EMPTY_ADDRESS)
+  const navigate = useNavigate()
 
   const onChangeHandler = (event) => {
-    const name = event.target.name
-    const value = event.target.value
-    setData(data => ({ ...data, [name]: value }))
+    const { name, value } = event.target
+    setData((prev) => ({ ...prev, [name]: value }))
   }
 
   const placeOrder = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    // Prepare order items
-    let orderItems = [];
-    food_list.forEach((item) => {
-      if (cartItems[item._id] > 0) {
-        let itemInfo = { ...item };
-        itemInfo["quantity"] = cartItems[item._id];
-        orderItems.push(itemInfo);
-      }
-    });
-
-    // Prepare order data to send to backend
-    let orderData = {
-      userId: token?.userId,  // Ensure this exists if needed in backend
-      address: data,
-      items: orderItems,
-      amount: getTotalCartAmount() + 25,  // Assuming ₱25 delivery fee
-    };
+    const items = food_list
+      .filter((item) => cartItems[item._id] > 0)
+      .map((item) => ({ ...item, quantity: cartItems[item._id] }))
 
     try {
-      const response = await axios.post(url + "/api/order/place", orderData, {
-        headers: { token },
-      });
-
-      // ✅ Stripe session response log
-      console.log("Stripe response:", response.data);
-
-      if (response.data.success) {
-        // Redirect to Stripe session URL
-        window.location.href = response.data.session_url;
+      const response = await api.placeOrder(token, { address: data, items, amount: getOrderTotal() })
+      if (response.success) {
+        window.location.href = response.session_url // Stripe Checkout
       } else {
-        alert("Error OrderData");
+        alert('Error placing order. Please try again.')
       }
     } catch (error) {
-      console.error("Order placement error:", error);
-      alert("Error placing order. Please try again.");
+      console.error('Order placement error:', error)
+      alert('Error placing order. Please try again.')
     }
-  };
+  }
 
-  const navigate = useNavigate()
+  // Checkout needs a signed-in user and something on the slip. The saved
+  // sign-in and the menu load after the first render, so wait for them.
+  useEffect(() => {
+    if (!token && !localStorage.getItem('token')) {
+      navigate('/')
+      setShowLogin(true)
+    } else if (food_list.length > 0 && getTotalCartAmount() === 0) {
+      navigate('/')
+    }
+  }, [token, food_list.length, cartItems])
 
-  useEffect(()=>{
-    if (!token) {
-      navigate('/cart')
-    }
-    else if(getTotalCartAmount()===0) {
-      navigate('/cart')
-    }
-  },[token])
+  const field = ([name, placeholder, type = 'text']) => (
+    <input key={name} required name={name} onChange={onChangeHandler} value={data[name]} type={type} placeholder={placeholder} aria-label={placeholder} />
+  )
 
   return (
     <form onSubmit={placeOrder} className='place-order'>
-      <div className="place-order-left">
-        <p className="title">Delivery Information</p>
-        <div className="multi-fields">
-          <input required name="firstName" onChange={onChangeHandler} value={data.firstName} type="text" placeholder='First Name' />
-          <input required name="lastName" onChange={onChangeHandler} value={data.lastName} type="text" placeholder='Last Name' />
-        </div>
-        <input required name="email" onChange={onChangeHandler} value={data.email} type="text" placeholder='Email Address' />
-        <input required name="street" onChange={onChangeHandler} value={data.street} type="text" placeholder='Street' />
-        <div className="multi-fields">
-          <input required name="city" onChange={onChangeHandler} value={data.city} type="text" placeholder='City' />
-          <input required name="province" onChange={onChangeHandler} value={data.province} type="text" placeholder='Province' />
-        </div>
-        <div className="multi-fields">
-          <input required name="zipcode" onChange={onChangeHandler} value={data.zipcode} type="text" placeholder='Zip code' />
-          <input required name="country" onChange={onChangeHandler} value={data.country} type="text" placeholder='Country' />
-        </div>
-        <input required name="phone" onChange={onChangeHandler} value={data.phone} type="text" placeholder='Phone Number' />
+      <div className='place-order-left'>
+        <p className='title'>Delivery Information</p>
+        {ADDRESS_ROWS.map((row) =>
+          row.length > 1
+            ? <div key={row[0][0]} className='multi-fields'>{row.map(field)}</div>
+            : field(row[0])
+        )}
       </div>
 
-      <div className="place-order-right">
-        <div className="cart-total">
-          <h2>Cart Totals</h2>
-          <div>
-            <div className="cart-total-details">
-              <p>Subtotal</p>
-              <p>₱{getTotalCartAmount()}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <p>Delivery Fee</p>
-              <p>₱{getTotalCartAmount() === 0 ? 0 : 25}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <b>Total</b>
-              <b>₱{getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 25}</b>
-            </div>
-          </div>
-          <button type="submit">PROCEED TO PAYMENT</button>
-        </div>
+      <div className='place-order-right'>
+        {/* The stamped slip, read-only: what is being paid for. */}
+        <OrderTray readOnly />
+        <button type='submit' className='place-order-pay'>Proceed to payment</button>
       </div>
     </form>
   )

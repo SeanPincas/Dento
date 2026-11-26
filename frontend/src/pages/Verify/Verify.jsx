@@ -1,38 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './Verify.css'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { StoreContext } from '../../context/StoreContext'
-import { useContext } from 'react'
-import axios from 'axios'
-import { useEffect } from 'react'
+import { api } from '../../services/api'
 
+// Landing page after Stripe Checkout: confirms the payment, then moves on.
 const Verify = () => {
 
-    const [searchParams, setSearchParam] = useSearchParams()
-    const success = searchParams.get("success")
-    const orderId = searchParams.get("orderId")
-    const {url} = useContext(StoreContext)
+    const [searchParams] = useSearchParams()
+    const success = searchParams.get('success')
+    const orderId = searchParams.get('orderId')
     const navigate = useNavigate()
-    
-    const verifyPayment = async () => {
-        const response = await axios.post(url+"/api/order/verify",{success,orderId})
-        if (response.data.success) {
-            navigate("/cart")
-        }
-        else {
-            navigate("/")
-        }
-    }
 
-    useEffect(()=>{
-        verifyPayment()
-    },[])
+    useEffect(() => {
+        api.verifyPayment(success, orderId).then((response) => {
+            navigate(response.success ? '/orders' : '/') // paid: show the order
+        })
+    }, [])
 
-  return (
-    <div className='verify'>
-        <div className="spinner"></div>
-    </div>
-  )
+    return (
+        <div className='verify'>
+            <div className='spinner'></div>
+        </div>
+    )
 }
 
 export default Verify

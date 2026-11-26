@@ -16,17 +16,32 @@ JWT_SECRET=change-me
 STRIPE_SECRET_KEY=sk_test_change_me
 ```
 
-The Compose file automatically loads the local backend environment file:
+The Compose file automatically loads the local backend environment file.
+
+## Development mode (live reload) - the default
+
+`docker-compose.override.yml` is loaded automatically, so the everyday command
+runs the customer and admin apps with the Vite dev server against your source
+folders. Saving a file updates the browser right away:
 
 ```bash
 docker compose up --build
 ```
 
-On Windows PowerShell, use the helper script to start the stack and print the local URLs:
+(`.\start-dento-dev.ps1` does the same in the background and prints the URLs.)
 
-```powershell
-.\start-dento.ps1
+The backend does not live-reload; restart it after backend changes with
+`docker compose restart backend`.
+
+## Production-style build
+
+To test the built apps served by Nginx (no live reload), skip the override:
+
+```bash
+docker compose -f docker-compose.yml up --build
 ```
+
+or `.\start-dento.ps1`. Stop either mode with `docker compose down`.
 
 ## URLs
 
