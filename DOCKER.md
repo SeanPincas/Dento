@@ -16,10 +16,16 @@ JWT_SECRET=change-me
 STRIPE_SECRET_KEY=sk_test_change_me
 ```
 
-You can either create a root `.env` from `.env.example`, or reuse the existing backend env file:
+The Compose file automatically loads the local backend environment file:
 
 ```bash
-docker compose --env-file backend/.env up --build
+docker compose up --build
+```
+
+On Windows PowerShell, use the helper script to start the stack and print the local URLs:
+
+```powershell
+.\start-dento.ps1
 ```
 
 ## URLs
