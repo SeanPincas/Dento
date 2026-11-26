@@ -16,3 +16,4 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
+CMD ["sh", "-c", "echo 'Customer app: http://localhost:5173'; exec nginx -g 'daemon off;'"]
